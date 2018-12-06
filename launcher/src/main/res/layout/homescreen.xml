@@ -11,7 +11,7 @@
 
     <fragment
         android:id="@+id/apps_grid"
-        android:name="net.evendanan.coffeetable.AppsGridFragment"
+        android:name="net.evendanan.coffeetable.LalaFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
