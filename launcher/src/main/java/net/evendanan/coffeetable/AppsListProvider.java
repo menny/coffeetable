@@ -7,7 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.util.Consumer;
+import androidx.core.util.Consumer;
 
 import java.text.Collator;
 import java.util.ArrayList;
