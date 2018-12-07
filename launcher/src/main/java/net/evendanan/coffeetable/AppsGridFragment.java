@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppsGridFragment extends Fragment {
 
     private AppsAdapter mAppsAdapter;
@@ -38,7 +41,17 @@ public class AppsGridFragment extends Fragment {
         mAppsAdapter = new AppsAdapter(getActivity(), this::onAppClicked);
         appsGrid.setAdapter(mAppsAdapter);
 
-        mAppsListProvider = new AppsListProvider(getContext(), appsList -> mAppsAdapter.submitList(appsList));
+        mAppsListProvider = new AppsListProvider(getContext(), this::onListOfAppsReceived);
+    }
+
+    private void onListOfAppsReceived(List<AppModel> appModels) {
+        ArrayList<AppModel> filteredApps = new ArrayList<>();
+        for (AppModel appModel : appModels) {
+            if (appModel.getActivityType().equals(AppModel.ActivityType.Main)) {
+                filteredApps.add(appModel);
+            }
+        }
+        mAppsAdapter.submitList(filteredApps);
     }
 
     @Override
