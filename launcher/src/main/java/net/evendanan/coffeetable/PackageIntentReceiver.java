@@ -5,35 +5,35 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-/**
- * Helper class to look for interesting changes to the installed apps
- * so that the loader can be updated.
- *
- * @Credit http://developer.android.com/reference/android/content/AsyncTaskLoader.html
- */
-public class PackageIntentReceiver extends BroadcastReceiver {
+class PackageIntentReceiver extends BroadcastReceiver {
 
-    final AppsLoader mLoader;
+    private final Context mContext;
+    private final Runnable mOnPackagesChanged;
 
-    public PackageIntentReceiver(AppsLoader loader) {
-        mLoader = loader;
-
+    public PackageIntentReceiver(Context context, Runnable onPackagesChanged) {
+        mContext = context;
+        mOnPackagesChanged = onPackagesChanged;
         IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
         filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
         filter.addDataScheme("package");
-        mLoader.getContext().registerReceiver(this, filter);
+        context.registerReceiver(this, filter);
 
         // Register for events related to sdcard installation.
         IntentFilter sdFilter = new IntentFilter();
         sdFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE);
         sdFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
-        mLoader.getContext().registerReceiver(this, sdFilter);
+        context.registerReceiver(this, sdFilter);
     }
 
-    @Override public void onReceive(Context context, Intent intent) {
-        // Tell the loader about the change.
-        mLoader.onContentChanged();
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        mOnPackagesChanged.run();
     }
 
+    public void close() {
+        mContext.unregisterReceiver(this);
+    }
 }

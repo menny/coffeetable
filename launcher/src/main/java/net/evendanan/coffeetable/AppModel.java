@@ -1,78 +1,67 @@
 package net.evendanan.coffeetable;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
-import java.io.File;
-
-/**
- * @credit http://developer.android.com/reference/android/content/AsyncTaskLoader.html
- */
 public class AppModel {
+    private final boolean mEnabled;
+    private final boolean mExported;
+    private final String mPackageName;
+    private final String mActivityName;
 
-    private final Context mContext;
-    private final ApplicationInfo mInfo;
+    private final CharSequence mAppLabel;
+    private final Drawable mIcon;
 
-    private String mAppLabel;
-    private Drawable mIcon;
+    private final ActivityType mIntentType;
 
-    private boolean mMounted;
-    private final File mApkFile;
+    private final Intent mLaunchIntent;
 
-    public AppModel(Context context, ApplicationInfo info) {
-        mContext = context;
-        mInfo = info;
-
-        mApkFile = new File(info.sourceDir);
-    }
-
-    public ApplicationInfo getAppInfo() {
-        return mInfo;
-    }
-
-    public String getApplicationPackageName() {
-        return getAppInfo().packageName;
-    }
-
-    public String getLabel() {
+    public CharSequence getAppLabel() {
         return mAppLabel;
     }
 
-    public Drawable getIcon() {
-        if (mIcon == null) {
-            if (mApkFile.exists()) {
-                mIcon = mInfo.loadIcon(mContext.getPackageManager());
-                return mIcon;
-            } else {
-                mMounted = false;
-            }
-        } else if (!mMounted) {
-            // If the app wasn't mounted but is now mounted, reload
-            // its icon.
-            if (mApkFile.exists()) {
-                mMounted = true;
-                mIcon = mInfo.loadIcon(mContext.getPackageManager());
-                return mIcon;
-            }
-        } else {
-            return mIcon;
-        }
-
-        return mContext.getResources().getDrawable(android.R.drawable.sym_def_app_icon);
+    public AppModel(String label, Drawable icon, boolean enabled, boolean exported, String packageName, String className, Intent launchIntent, boolean isMain) {
+        mAppLabel = label;
+        mIcon = icon;
+        mEnabled = enabled;
+        mExported = exported;
+        mPackageName = packageName;
+        mActivityName = className;
+        mLaunchIntent = launchIntent;
+        mIntentType = isMain ? ActivityType.Main : ActivityType.Internal;
     }
 
+    public Drawable getIcon() {
+        return mIcon;
+    }
 
-    void loadLabel(Context context) {
-        if (mAppLabel == null || !mMounted) {
-            if (!mApkFile.exists()) {
-                mMounted = false;
-                mAppLabel = mInfo.packageName;
-            } else {
-                mMounted = true;
-                CharSequence label = mInfo.loadLabel(context.getPackageManager());
-                mAppLabel = label != null ? label.toString() : mInfo.packageName;
-            }
-        }
+    public ActivityType getActivityType() {
+        return mIntentType;
+    }
+
+    public Intent getLaunchIntent() {
+        return new Intent(mLaunchIntent);
+    }
+
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    public boolean isExported() {
+        return mExported;
+    }
+
+    public String getPackageName() {
+        return mPackageName;
+    }
+
+    public String getActivityName() {
+        return mActivityName;
+    }
+
+    public enum ActivityType {
+        Main,
+        Internal,
+        Shortcut
     }
 }

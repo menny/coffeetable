@@ -1,68 +1,53 @@
 package net.evendanan.coffeetable;
 
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.GridView;
+import android.view.ViewGroup;
 
-import java.util.List;
+public class AppsGridFragment extends Fragment {
 
-/**
- * Created by Arnab Chakraborty
- */
-public class AppsGridFragment extends GridFragment implements LoaderManager.LoaderCallbacks<List<AppModel>> {
+    private AppsAdapter mAppsAdapter;
+    private AppsListProvider mAppsListProvider;
 
-    AppListAdapter mAdapter;
+    public AppsGridFragment() {
+    }
+
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        setEmptyText("No Applications");
-
-        mAdapter = new AppListAdapter(getActivity());
-        setGridAdapter(mAdapter);
-
-        // till the data is loaded display a spinner
-        setGridShown(false);
-
-        // create the loader to load the apps list in background
-        getLoaderManager().initLoader(0, null, this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.apps_grid_fragment, container, false);
     }
 
     @Override
-    public Loader<List<AppModel>> onCreateLoader(int id, Bundle bundle) {
-        return new AppsLoader(getActivity());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        RecyclerView appsGrid = view.findViewById(R.id.app_recycler_view);
+
+        appsGrid.setHasFixedSize(true);
+        appsGrid.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.apps_grid_column_count)));
+
+        mAppsAdapter = new AppsAdapter(getActivity(), this::onAppClicked);
+        appsGrid.setAdapter(mAppsAdapter);
+
+        mAppsListProvider = new AppsListProvider(getContext(), appsList -> mAppsAdapter.submitList(appsList));
     }
 
     @Override
-    public void onLoadFinished(Loader<List<AppModel>> loader, List<AppModel> apps) {
-        mAdapter.setData(apps);
-
-        if (isResumed()) {
-            setGridShown(true);
-        } else {
-            setGridShownNoAnimation(true);
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        mAppsListProvider.close();
     }
 
-    @Override
-    public void onLoaderReset(Loader<List<AppModel>> loader) {
-        mAdapter.setData(null);
-    }
-
-    @Override
-    public void onGridItemClick(GridView g, View v, int position, long id) {
-        AppModel app = (AppModel) getGridAdapter().getItem(position);
-        if (app != null) {
-            Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(app.getApplicationPackageName());
-
-            if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
+    private void onAppClicked(AppModel appModel) {
+        startActivity(appModel.getLaunchIntent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }
