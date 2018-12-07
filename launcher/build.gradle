@@ -12,12 +12,13 @@ apply plugin: 'com.android.application'
 repositories {
     google()
     jcenter()
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
+    implementation 'com.github.menny.Chauffeur:permissions:90e703256785b7baf9cd37370b62b1d7d3830406'
 }
 
 android {
