@@ -28,5 +28,19 @@
 
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="net.evendanan.coffeetable.settings.SettingsActivity"
+            android:label="@string/settings_app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor"
+            android:theme="@style/SettingsAppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- also in the launcher -->
+                <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

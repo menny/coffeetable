@@ -1,4 +1,4 @@
-package net.evendanan.coffeetable;
+package net.evendanan.coffeetable.model;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import androidx.core.util.Consumer;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -15,16 +14,40 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-class AppsListProvider {
+import androidx.core.util.Consumer;
 
+public class AppsListProvider {
+
+    /**
+     * Perform alphabetical comparison of application entry objects.
+     */
+    private static final Comparator<AppModel> ALPHA_COMPARATOR = new Comparator<AppModel>() {
+        private final Collator sCollator = Collator.getInstance();
+
+        @Override
+        public int compare(AppModel object1, AppModel object2) {
+            final int packageDiff = sCollator.compare(object1.getPackageName(), object2.getPackageName());
+            if (packageDiff == 0) {
+                return sCollator.compare(object1.getAppLabel(), object2.getAppLabel());
+            } else {
+                return packageDiff;
+            }
+        }
+    };
     private final PackageIntentReceiver mPackageIntentReceiver;
     private final Consumer<List<AppModel>> mOnAppsChanged;
+    private final Context mContext;
 
-    AppsListProvider(Context context, Consumer<List<AppModel>> onAppsChanged) {
+    public AppsListProvider(Context context, Consumer<List<AppModel>> onAppsChanged) {
+        mContext = context;
         mOnAppsChanged = onAppsChanged;
-        mPackageIntentReceiver = new PackageIntentReceiver(context, () -> mOnAppsChanged.accept(getInstalledApps(context.getPackageManager())));
+        mPackageIntentReceiver = new PackageIntentReceiver(context, this::forceRefresh);
         //initial call
         onAppsChanged.accept(getInstalledApps(context.getPackageManager()));
+    }
+
+    public void forceRefresh() {
+        mOnAppsChanged.accept(getInstalledApps(mContext.getPackageManager()));
     }
 
     private List<AppModel> getInstalledApps(PackageManager pm) {
@@ -60,6 +83,7 @@ class AppsListProvider {
                                 activityIntent,
                                 activityIntent == mainActivityIntent);
 
+
                         items.add(app);
                     }
                 }
@@ -74,24 +98,7 @@ class AppsListProvider {
         return items;
     }
 
-    /**
-     * Perform alphabetical comparison of application entry objects.
-     */
-    private static final Comparator<AppModel> ALPHA_COMPARATOR = new Comparator<AppModel>() {
-        private final Collator sCollator = Collator.getInstance();
-
-        @Override
-        public int compare(AppModel object1, AppModel object2) {
-            final int packageDiff = sCollator.compare(object1.getPackageName(), object2.getPackageName());
-            if (packageDiff == 0) {
-                return sCollator.compare(object1.getAppLabel(), object2.getAppLabel());
-            } else {
-                return packageDiff;
-            }
-        }
-    };
-
-    void close() {
+    public void close() {
         mPackageIntentReceiver.close();
     }
 }

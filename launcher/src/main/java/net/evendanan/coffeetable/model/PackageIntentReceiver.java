@@ -1,4 +1,4 @@
-package net.evendanan.coffeetable;
+package net.evendanan.coffeetable.model;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

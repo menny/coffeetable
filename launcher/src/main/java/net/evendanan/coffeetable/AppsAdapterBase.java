@@ -1,23 +1,26 @@
 package net.evendanan.coffeetable;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.core.util.Consumer;
-import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-class AppsAdapter extends ListAdapter<AppModel, AppsAdapter.AppsViewModel> {
+import net.evendanan.coffeetable.model.AppModel;
+
+import androidx.annotation.NonNull;
+import androidx.core.util.Consumer;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
+public abstract class AppsAdapterBase<VH extends AppsAdapterBase.AppsViewModel> extends ListAdapter<AppModel, VH> {
 
     private final LayoutInflater mLayoutInflater;
     private final Consumer<AppModel> mClickHandler;
 
-    AppsAdapter(Context context, Consumer<AppModel> clickHandler) {
+    public AppsAdapterBase(Context context, Consumer<AppModel> clickHandler) {
         super(new Diff());
         mLayoutInflater = LayoutInflater.from(context);
         mClickHandler = clickHandler;
@@ -25,32 +28,38 @@ class AppsAdapter extends ListAdapter<AppModel, AppsAdapter.AppsViewModel> {
 
     @NonNull
     @Override
-    public AppsViewModel onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new AppsViewModel(mLayoutInflater.inflate(R.layout.list_item_icon_text, viewGroup, false), mClickHandler);
+    public VH onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        return createAppsViewHolder(mLayoutInflater, viewGroup, mClickHandler);
     }
+
+    protected abstract VH createAppsViewHolder(LayoutInflater inflater, ViewGroup parent, Consumer<AppModel> clickHandler);
 
     @Override
-    public void onBindViewHolder(@NonNull AppsViewModel appsViewModel, int i) {
+    public void onBindViewHolder(@NonNull VH appsViewModel, int i) {
         final AppModel item = getItem(i);
-        appsViewModel.mIcon.setImageDrawable(item.getIcon());
-        appsViewModel.mLabel.setText(item.getAppLabel());
-        appsViewModel.mCurrentShowing = item;
+        appsViewModel.bind(item);
     }
 
-    static class AppsViewModel extends RecyclerView.ViewHolder {
+    public static class AppsViewModel extends RecyclerView.ViewHolder {
 
         private final ImageView mIcon;
         private final TextView mLabel;
         private final Consumer<AppModel> mOnClick;
         private AppModel mCurrentShowing;
 
-        AppsViewModel(@NonNull View itemView, Consumer<AppModel> clickHandler) {
+        public AppsViewModel(@NonNull View itemView, Consumer<AppModel> clickHandler) {
             super(itemView);
             mOnClick = clickHandler;
             mIcon = itemView.findViewById(R.id.icon);
             mLabel = itemView.findViewById(R.id.text);
 
             itemView.setOnClickListener(v -> mOnClick.accept(mCurrentShowing));
+        }
+
+        public void bind(AppModel item) {
+            mIcon.setImageDrawable(item.getIcon());
+            mLabel.setText(item.getAppLabel());
+            mCurrentShowing = item;
         }
     }
 

@@ -1,4 +1,4 @@
-package net.evendanan.coffeetable;
+package net.evendanan.coffeetable.model;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -16,10 +16,6 @@ public class AppModel {
 
     private final Intent mLaunchIntent;
 
-    public CharSequence getAppLabel() {
-        return mAppLabel;
-    }
-
     public AppModel(String label, Drawable icon, boolean enabled, boolean exported, String packageName, String className, Intent launchIntent, boolean isMain) {
         mAppLabel = label;
         mIcon = icon;
@@ -29,6 +25,10 @@ public class AppModel {
         mActivityName = className;
         mLaunchIntent = launchIntent;
         mIntentType = isMain ? ActivityType.Main : ActivityType.Internal;
+    }
+
+    public CharSequence getAppLabel() {
+        return mAppLabel;
     }
 
     public Drawable getIcon() {

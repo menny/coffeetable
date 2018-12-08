@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.preference:preference:1.1.0-alpha01'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
     implementation 'com.github.menny.Chauffeur:permissions:90e703256785b7baf9cd37370b62b1d7d3830406'
 }
