@@ -1,10 +1,13 @@
 package net.evendanan.coffeetable.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import net.evendanan.coffeetable.AppsAdapterBase;
@@ -12,6 +15,10 @@ import net.evendanan.coffeetable.R;
 import net.evendanan.coffeetable.model.AppModel;
 import net.evendanan.coffeetable.model.AppsListProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatCheckBox;
@@ -25,6 +32,7 @@ public class AppsSelectionFragment extends Fragment {
     private AppsSelectionAdapter mAppsAdapter;
     private AppsListProvider mAppsListProvider;
     private VisibleApps mVisibleApps;
+    private SharedPreferences mPreferences;
 
     @Nullable
     @Override
@@ -36,6 +44,12 @@ public class AppsSelectionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        setupFilterCheckBox(view, R.id.filter_out_non_main, mPreferences, "prefs_key_filter_out_not_main", true);
+        setupFilterCheckBox(view, R.id.filter_out_not_export, mPreferences, "prefs_key_filter_out_not_export", true);
+        setupFilterCheckBox(view, R.id.filter_out_disabled, mPreferences, "prefs_key_filter_out_disabled", true);
+
         RecyclerView appsGrid = view.findViewById(R.id.app_recycler_view);
 
         appsGrid.setHasFixedSize(true);
@@ -46,7 +60,33 @@ public class AppsSelectionFragment extends Fragment {
         mAppsAdapter = new AppsSelectionAdapter(getActivity(), this::onAppClicked, mVisibleApps);
         appsGrid.setAdapter(mAppsAdapter);
 
-        mAppsListProvider = new AppsListProvider(getContext(), mAppsAdapter::submitList);
+        mAppsListProvider = new AppsListProvider(getContext(), this::onAppsListChanged);
+    }
+
+    private void onAppsListChanged(List<AppModel> appModels) {
+        final boolean filterOutNotMain = mPreferences.getBoolean("prefs_key_filter_out_not_main", true);
+        final boolean filterDisabled = mPreferences.getBoolean("prefs_key_filter_out_not_export", true);
+        final boolean filterNotExported = mPreferences.getBoolean("prefs_key_filter_out_disabled", true);
+        ArrayList<AppModel> filteredApps = new ArrayList<>();
+        for (AppModel appModel : appModels) {
+            if (!mVisibleApps.isVisibleApp(appModel)) {
+                if (filterOutNotMain && !appModel.getActivityType().equals(AppModel.ActivityType.Main)) continue;
+                if (filterDisabled && !appModel.isEnabled()) continue;
+                if (filterNotExported && !appModel.isExported()) continue;
+            }
+            filteredApps.add(appModel);
+        }
+
+        mAppsAdapter.submitList(filteredApps);
+    }
+
+    private void setupFilterCheckBox(@NonNull View rootView, @IdRes int checkboxId, final SharedPreferences pref, final String prefsKey, boolean defaultValue) {
+        CheckBox filter = rootView.findViewById(checkboxId);
+        filter.setChecked(pref.getBoolean(prefsKey, defaultValue));
+        filter.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            pref.edit().putBoolean(prefsKey, isChecked).apply();
+            mAppsListProvider.forceRefresh();
+        });
     }
 
     private void onAppVisibilityChanged() {
