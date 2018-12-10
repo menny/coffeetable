@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import net.evendanan.coffeetable.BuildConfig;
+
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +30,20 @@ public class AppsListProvider {
         public int compare(AppModel object1, AppModel object2) {
             final int packageDiff = sCollator.compare(object1.getPackageName(), object2.getPackageName());
             if (packageDiff == 0) {
-                return sCollator.compare(object1.getAppLabel(), object2.getAppLabel());
+                final int labelDiff = sCollator.compare(object1.getAppLabel(), object2.getAppLabel());
+                if (labelDiff == 0) {
+                    return sCollator.compare(object1.getActivityName(), object2.getActivityName());
+                } else {
+                    return labelDiff;
+                }
             } else {
+                if (object1.getPackageName().equals(BuildConfig.APPLICATION_ID)) {
+                    //our apps are always at the end
+                    return 1;
+                } else if (object2.getPackageName().equals(BuildConfig.APPLICATION_ID)) {
+                    //our apps are always at the end
+                    return -1;
+                }
                 return packageDiff;
             }
         }
