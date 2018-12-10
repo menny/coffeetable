@@ -15,12 +15,13 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/apps_cell_width"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/apps_cell_height"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/icon"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitCenter" />
