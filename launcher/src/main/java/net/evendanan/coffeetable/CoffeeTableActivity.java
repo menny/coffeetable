@@ -18,7 +18,7 @@ import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class HomeScreen extends Activity {
+public class CoffeeTableActivity extends Activity {
 
     private HomeScreenAppsAdapter mAppsAdapter;
     private AppsListProvider mAppsListProvider;
