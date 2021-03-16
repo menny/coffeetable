@@ -18,6 +18,12 @@ import java.util.List;
 
 import androidx.core.util.Consumer;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class AppsListProvider {
 
     /**
@@ -51,17 +57,22 @@ public class AppsListProvider {
     private final PackageIntentReceiver mPackageIntentReceiver;
     private final Consumer<List<AppModel>> mOnAppsChanged;
     private final Context mContext;
+    private final CompositeDisposable mRefreshes = new CompositeDisposable();
 
     public AppsListProvider(Context context, Consumer<List<AppModel>> onAppsChanged) {
         mContext = context;
         mOnAppsChanged = onAppsChanged;
         mPackageIntentReceiver = new PackageIntentReceiver(context, this::forceRefresh);
         //initial call
-        onAppsChanged.accept(getInstalledApps(context.getPackageManager()));
+        forceRefresh();
     }
 
     public void forceRefresh() {
-        mOnAppsChanged.accept(getInstalledApps(mContext.getPackageManager()));
+        mRefreshes.add(Observable.fromCallable(() -> getInstalledApps(mContext.getPackageManager()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .startWithItem(Collections.emptyList()/*represents loading*/)
+                .subscribe(mOnAppsChanged::accept));
     }
 
     private List<AppModel> getInstalledApps(PackageManager pm) {
@@ -113,6 +124,7 @@ public class AppsListProvider {
     }
 
     public void close() {
+        mRefreshes.dispose();
         mPackageIntentReceiver.close();
     }
 }

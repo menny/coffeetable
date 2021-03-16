@@ -1,12 +1,6 @@
 <resources>
 
-    <style name="AppTheme"
-           parent="android:Theme.Light.NoTitleBar">
-        <item name="android:windowAnimationStyle">@null</item>
-    </style>
-
-    <style name="SettingsAppTheme"
-           parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 

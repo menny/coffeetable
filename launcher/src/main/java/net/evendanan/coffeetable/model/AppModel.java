@@ -62,6 +62,7 @@ public class AppModel {
     public enum ActivityType {
         Main,
         Internal,
+        Home,
         Shortcut
     }
 }

@@ -13,11 +13,17 @@
         android:paddingBottom="32dp"
         android:orientation="vertical">
 
+        <androidx.constraintlayout.utils.widget.ImageFilterButton
+            android:id="@+id/navigate_back_to_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:src="@drawable/ic_action_settings"/>
         <ImageView
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_gravity="center"
-            android:src="@mipmap/ic_launcher_foreground" />
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
             style="@style/TextAppearance.AppCompat.Large"
@@ -69,23 +75,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
             android:text="@string/app_license_android_x_license"
-            app:fontFamily="monospace" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:text="@string/app_license_chauffeur_title"
-            app:fontFamily="monospace" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="@string/app_license_chauffeur_license"
             app:fontFamily="monospace" />
 
     </LinearLayout>

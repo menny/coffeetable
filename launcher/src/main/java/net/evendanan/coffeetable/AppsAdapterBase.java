@@ -15,13 +15,16 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-public abstract class AppsAdapterBase<VH extends AppsAdapterBase.AppsViewModel> extends ListAdapter<AppModel, VH> {
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class AppsAdapterBase<VH extends AppsAdapterBase.AppsViewModel> extends RecyclerView.Adapter<VH> {
 
     private final LayoutInflater mLayoutInflater;
     private final Consumer<AppModel> mClickHandler;
+    private final List<AppModel> mItems = new ArrayList<>();
 
     public AppsAdapterBase(Context context, Consumer<AppModel> clickHandler) {
-        super(new Diff());
         mLayoutInflater = LayoutInflater.from(context);
         mClickHandler = clickHandler;
     }
@@ -32,12 +35,22 @@ public abstract class AppsAdapterBase<VH extends AppsAdapterBase.AppsViewModel> 
         return createAppsViewHolder(mLayoutInflater, viewGroup, mClickHandler);
     }
 
+    @Override
+    public int getItemCount() {
+        return mItems.size();
+    }
+
+    public void setItems(List<AppModel> newList) {
+        mItems.clear();
+        mItems.addAll(newList);
+        notifyDataSetChanged();
+    }
+
     protected abstract VH createAppsViewHolder(LayoutInflater inflater, ViewGroup parent, Consumer<AppModel> clickHandler);
 
     @Override
     public void onBindViewHolder(@NonNull VH appsViewModel, int i) {
-        final AppModel item = getItem(i);
-        appsViewModel.bind(item);
+        appsViewModel.bind(mItems.get(i));
     }
 
     public static class AppsViewModel extends RecyclerView.ViewHolder {
@@ -60,19 +73,6 @@ public abstract class AppsAdapterBase<VH extends AppsAdapterBase.AppsViewModel> 
             mIcon.setImageDrawable(item.getIcon());
             mLabel.setText(item.getAppLabel());
             mCurrentShowing = item;
-        }
-    }
-
-    private static class Diff extends DiffUtil.ItemCallback<AppModel> {
-
-        @Override
-        public boolean areItemsTheSame(@NonNull AppModel appModel, @NonNull AppModel t1) {
-            return appModel.getPackageName().equals(t1.getPackageName()) && appModel.getActivityName().equals(t1.getActivityName());
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull AppModel appModel, @NonNull AppModel t1) {
-            return areItemsTheSame(appModel, t1);
         }
     }
 }

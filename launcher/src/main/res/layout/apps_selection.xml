@@ -2,39 +2,54 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:weightSum="3">
 
         <CheckBox
             android:id="@+id/filter_out_non_main"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:padding="4dp"
             android:text="@string/filter_out_none_main" />
 
         <CheckBox
             android:id="@+id/filter_out_not_export"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:padding="4dp"
             android:text="@string/filter_out_not_exported" />
 
         <CheckBox
             android:id="@+id/filter_out_disabled"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:padding="4dp"
             android:text="@string/filter_out_disabled" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="1dp"/>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/navigate_to_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:src="@drawable/ic_action_about"/>
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/navigate_back_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:src="@mipmap/ic_launcher"/>
 
     </LinearLayout>
 

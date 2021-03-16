@@ -7,13 +7,14 @@ Roughly, based on [SimpleLauncher](https://github.com/arnabc/simplelauncher)
 
 * Large icons.
 * Just show the apps you pick.
-* allow picking from non-default activities as well.
+* Allow picking from non-default activities as well.
+* Allow to pick another HOME (launcher) activity.
 
 ## Releases
 Only releasing here, at Github. Head over to the [Releases](https://github.com/menny/coffeetable/releases) tab to find the latest release.<br/>
 Or build from source (Gradle and Android knowledge required).
 
-# License
+## License
 
 ```
    Copyright 2018 Menny Even-Danan

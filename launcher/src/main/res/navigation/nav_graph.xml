@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/HomeScreen">
+
+    <fragment
+        android:id="@+id/HomeScreen"
+        android:name="net.evendanan.coffeetable.HomeScreenFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/homescreen">
+
+        <action
+            android:id="@+id/action_HomeScreen_to_SettingsFragment"
+            app:destination="@id/SettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="net.evendanan.coffeetable.settings.AppsSelectionFragment"
+        android:label="@string/settings_app_name"
+        tools:layout="@layout/apps_selection">
+
+        <action
+            android:id="@+id/action_Settings_to_AboutFragment"
+            app:destination="@id/AboutFragment" />
+        <action
+            android:id="@+id/action_Settings_to_HomeScreen"
+            app:destination="@id/HomeScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/AboutFragment"
+        android:name="net.evendanan.coffeetable.settings.AboutFragment"
+        android:label="@string/prefs_about_and_licenses"
+        tools:layout="@layout/about_app">
+
+        <action
+            android:id="@+id/action_About_to_Settings"
+            app:destination="@id/SettingsFragment" />
+    </fragment>
+</navigation>
